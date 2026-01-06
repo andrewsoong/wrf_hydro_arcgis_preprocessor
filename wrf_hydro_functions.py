@@ -240,7 +240,6 @@ fields = {'link': ['link', 'LONG', 'i8'],
             'x': ['x', 'FLOAT', 'f4'],
             'y': ['y', 'FLOAT', 'f4'],
             'Kchan': ['Kchan', 'SHORT', 'i4'],
-            'Lake': ['NHDWaterbodyComID', 'LONG', 'i4'],
             'gages': ['gages', 'TEXT', '|S15'],
             'Lake': ['NHDWaterbodyComID', 'LONG', 'i4'],
             'lake_id': ['lake_id', 'LONG', 'i8'],
@@ -1838,7 +1837,7 @@ def build_RouteLink(arcpy, RoutingNC, order, From_To, NodeElev, ToSeg, NodesLL, 
     printMessages(arcpy, ['        Done writing NC file to disk.'])
     printMessages(arcpy, ['    Routing table created without error.'])
 
-def assign_lake_IDs(arcpy, in_lakes, lakeIDfield=None, CalcPyVersion="PYTHON_9.3"):
+def assign_lake_IDs(arcpy, in_lakes, lakeIDfield=None, CalcPyVersion="PYTHON3"):
     '''
     This function will either assign a new, unique lake ID field to an existing
     lake feature layer, or return an existing (provided) lake ID field if it
@@ -1886,7 +1885,9 @@ def reaches_with_lakes(arcpy, FL, WB, outDir, ToSeg, sorted_Flowlinearr, in_rast
     else:
         outshp = TempLakeFile
         arcpy.CopyFeatures_management(WB, outshp)
-        lakeID = assign_lake_IDs(arcpy, outshp, lakeIDfield=lakeID)
+        # Fix added 1/5/2026 by MC, matches lake IDs in Routelink and lake shapefile to be in ascending order
+        # lakeID = assign_lake_IDs(arcpy, outshp, lakeIDfield=lakeID)
+        lakeID = assign_lake_IDs(arcpy, outshp, lakeIDfield=None)
 
     #arcpy.AddField_management(FL, lakeID, "SHORT")
     dtypes = numpy.dtype([(FLID, 'i4'), (hydroSeq, 'i4')])           # Create a numpy dtype object
